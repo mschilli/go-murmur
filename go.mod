@@ -1,4 +1,4 @@
-module murmur
+module github.com/mschilli/go-murmur
 
 go 1.22.3
 
