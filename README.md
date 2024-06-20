@@ -4,7 +4,7 @@ Go library to mumble mumble more on that later.
 
 ## Installation
 
-`go get -u github.com/mschilli/go-ynabler`
+`go get -u github.com/mschilli/go-murmur`
 
 ## Author
 
