@@ -1,10 +1,35 @@
-# murmur
+# Murmur
 
-Go library to mumble mumble more on that later.
+Go library for simple access to a YAML formatted password file.
 
-## Installation
+## How to use it
 
-`go get -u github.com/mschilli/go-murmur`
+```
+$ cat ~/.murmur.yaml
+fooapp: topsecret
+barapp: hunter3
+
+$ cat mtest.go
+package main
+
+import (
+    "fmt"
+    "github.com/mschilli/go-murmur"
+)
+
+func main() {
+    m := murmur.NewMurmur()
+    val, err := m.Lookup("barapp")
+
+    if err != nil {
+	panic(err)
+    }
+
+    fmt.Printf("val: %s\n", val)
+}
+
+$ ./mtest
+val=hunter3
 
 ## Author
 

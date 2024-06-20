@@ -1,33 +1,47 @@
 package murmur
 
 import (
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"os/user"
 	"path"
-	"errors"
 )
 
-const Version = "0.01"
+const Version = "0.02"
+
+type MurmurStore struct {
+	FilePath string
+}
+
+type MurmurOption func(*MurmurStore)
 
 const StoreFileName = ".murmur"
 
-var StoreLocationFinder = findStorePath
+func NewMurmur(opts ...MurmurOption) *MurmurStore {
+	m := &MurmurStore{}
 
-func Lookup(name string) (string, error) {
-    lookup, err := ReadStore()
-    if err != nil {
-	return "", err
-    }
+	for _, opt := range opts {
+		opt(m)
+	}
 
-    pass, ok := lookup[name]
-    if !ok {
-	return "", errors.New(fmt.Sprintf("No entry for %s found", name))
-    }
+	if m.FilePath == "" {
+		path, err := findStorePath()
+		if err != nil {
+			panic(err)
+		}
+		m.FilePath = path
+	}
 
-    return pass, nil
+	return m
+}
+
+func WithFilePath(path string) MurmurOption {
+	return func(m *MurmurStore) {
+		m.FilePath = path
+	}
 }
 
 func findStorePath() (string, error) {
@@ -44,6 +58,28 @@ func findStorePath() (string, error) {
 	}
 
 	return "", err
+}
+
+func (m *MurmurStore) Lookup(name string) (string, error) {
+	lookup, err := m.readStore()
+	if err != nil {
+		return "", err
+	}
+
+	pass, ok := lookup[name]
+	if !ok {
+		return "", errors.New(fmt.Sprintf("No entry for %s found", name))
+	}
+
+	return pass, nil
+}
+
+func (m *MurmurStore) readStore() (map[string]string, error) {
+	data := make(map[string]string)
+
+	data, err := readJSONFile(m.FilePath)
+
+	return data, err
 }
 
 func readJSONFile(path string) (map[string]string, error) {
@@ -66,17 +102,4 @@ func readJSONFile(path string) (map[string]string, error) {
 	}
 
 	return data, nil
-}
-
-func ReadStore() (map[string]string, error) {
-	data := make(map[string]string)
-
-	path, err := StoreLocationFinder()
-	if err != nil {
-		return data, err
-	}
-
-	data, err = readJSONFile(path)
-
-	return data, err
 }
