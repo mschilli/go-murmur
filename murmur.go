@@ -10,7 +10,7 @@ import (
 	"path"
 )
 
-const Version = "0.02"
+const Version = "1.0.0"
 
 type MurmurStore struct {
 	FilePath string
@@ -61,12 +61,12 @@ func findStorePath() (string, error) {
 }
 
 func (m *MurmurStore) Lookup(name string) (string, error) {
-	lookup, err := m.readStore()
+	dict, err := readJSONFile(m.FilePath)
 	if err != nil {
 		return "", err
 	}
 
-	pass, ok := lookup[name]
+	pass, ok := dict[name]
 	if !ok {
 		return "", errors.New(fmt.Sprintf("No entry for %s found", name))
 	}
@@ -74,29 +74,15 @@ func (m *MurmurStore) Lookup(name string) (string, error) {
 	return pass, nil
 }
 
-func (m *MurmurStore) readStore() (map[string]string, error) {
-	data := make(map[string]string)
-
-	data, err := readJSONFile(m.FilePath)
-
-	return data, err
-}
-
 func readJSONFile(path string) (map[string]string, error) {
 	data := make(map[string]string)
 
-	file, err := os.Open(path)
-	if err != nil {
-		return data, err
-	}
-	defer file.Close()
-
-	b, err := ioutil.ReadAll(file)
+	raw, err := ioutil.ReadFile(path)
 	if err != nil {
 		return data, err
 	}
 
-	err = yaml.Unmarshal(b, &data)
+	err = yaml.Unmarshal(raw, &data)
 	if err != nil {
 		return data, err
 	}
