@@ -5,7 +5,7 @@ import (
 )
 
 func TestLookup(t *testing.T) {
-	mur := NewMurmur(WithFilePath("data/murmur.yaml"))
+	mur := NewMurmur().WithFilePath("data/murmur.yaml")
 
 	name := "foo"
 	p, err := mur.Lookup(name)

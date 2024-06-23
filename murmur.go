@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"os"
 	"os/user"
 	"path"
 )
@@ -20,31 +19,16 @@ type MurmurOption func(*MurmurStore)
 
 const StoreFileName = ".murmur"
 
-func NewMurmur(opts ...MurmurOption) *MurmurStore {
-	m := &MurmurStore{}
+func NewMurmur() *MurmurStore {
+	return &MurmurStore{}
+}
 
-	for _, opt := range opts {
-		opt(m)
-	}
-
-	if m.FilePath == "" {
-		path, err := findStorePath()
-		if err != nil {
-			panic(err)
-		}
-		m.FilePath = path
-	}
-
+func (m *MurmurStore) WithFilePath(path string) *MurmurStore {
+	m.FilePath = path
 	return m
 }
 
-func WithFilePath(path string) MurmurOption {
-	return func(m *MurmurStore) {
-		m.FilePath = path
-	}
-}
-
-func findStorePath() (string, error) {
+func HomePath() (string, error) {
 	u, err := user.Current()
 	if err != nil {
 		return "", err
@@ -52,15 +36,17 @@ func findStorePath() (string, error) {
 
 	p := path.Join(u.HomeDir, StoreFileName)
 
-	_, err = os.Stat(p)
-	if err == nil {
-		return p, nil
-	}
-
-	return "", err
+	return p, nil
 }
 
 func (m *MurmurStore) Lookup(name string) (string, error) {
+	if len(m.FilePath) == 0 {
+		path, err := HomePath()
+		if err != nil {
+			return "", err
+		}
+		m.FilePath = path
+	}
 	dict, err := readJSONFile(m.FilePath)
 	if err != nil {
 		return "", err
