@@ -30,6 +30,7 @@ func main() {
 
 $ ./mtest
 val=hunter3
+```
 
 ## Author
 
