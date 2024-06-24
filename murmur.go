@@ -1,7 +1,6 @@
 package murmur
 
 import (
-	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -11,22 +10,25 @@ import (
 
 const Version = "1.0.0"
 
+// Read secrets from a .murmur YAML file
 type Murmur struct {
 	FilePath string
 }
 
 const StoreFileName = ".murmur"
 
+// Create a new instance
 func NewMurmur() *Murmur {
 	return &Murmur{}
 }
 
+// Set the .murmur file path manually
 func (m *Murmur) WithFilePath(path string) *Murmur {
 	m.FilePath = path
 	return m
 }
 
-func HomePath() (string, error) {
+func homePath() (string, error) {
 	u, err := user.Current()
 	if err != nil {
 		return "", err
@@ -37,9 +39,10 @@ func HomePath() (string, error) {
 	return p, nil
 }
 
+// Look up a .murmur key by name and return its value
 func (m *Murmur) Lookup(name string) (string, error) {
 	if len(m.FilePath) == 0 {
-		path, err := HomePath()
+		path, err := homePath()
 		if err != nil {
 			return "", err
 		}
@@ -52,7 +55,7 @@ func (m *Murmur) Lookup(name string) (string, error) {
 
 	pass, ok := dict[name]
 	if !ok {
-		return "", errors.New(fmt.Sprintf("No entry for %s found", name))
+		return "", fmt.Errorf("No entry found for %s", name)
 	}
 
 	return pass, nil
