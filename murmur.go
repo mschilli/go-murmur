@@ -11,19 +11,17 @@ import (
 
 const Version = "1.0.0"
 
-type MurmurStore struct {
+type Murmur struct {
 	FilePath string
 }
 
-type MurmurOption func(*MurmurStore)
-
 const StoreFileName = ".murmur"
 
-func NewMurmur() *MurmurStore {
-	return &MurmurStore{}
+func NewMurmur() *Murmur {
+	return &Murmur{}
 }
 
-func (m *MurmurStore) WithFilePath(path string) *MurmurStore {
+func (m *Murmur) WithFilePath(path string) *Murmur {
 	m.FilePath = path
 	return m
 }
@@ -39,7 +37,7 @@ func HomePath() (string, error) {
 	return p, nil
 }
 
-func (m *MurmurStore) Lookup(name string) (string, error) {
+func (m *Murmur) Lookup(name string) (string, error) {
 	if len(m.FilePath) == 0 {
 		path, err := HomePath()
 		if err != nil {
