@@ -47,7 +47,7 @@ func (m *MurmurStore) Lookup(name string) (string, error) {
 		}
 		m.FilePath = path
 	}
-	dict, err := readJSONFile(m.FilePath)
+	dict, err := readYAMLFile(m.FilePath)
 	if err != nil {
 		return "", err
 	}
@@ -60,7 +60,7 @@ func (m *MurmurStore) Lookup(name string) (string, error) {
 	return pass, nil
 }
 
-func readJSONFile(path string) (map[string]string, error) {
+func readYAMLFile(path string) (map[string]string, error) {
 	data := make(map[string]string)
 
 	raw, err := ioutil.ReadFile(path)
