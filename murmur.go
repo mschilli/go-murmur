@@ -8,7 +8,7 @@ import (
 	"path"
 )
 
-const Version = "1.0.4"
+const Version = "1.0.5"
 
 // Read secrets from a .murmur YAML file
 type Murmur struct {
