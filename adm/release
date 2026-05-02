@@ -1,0 +1,49 @@
+#!/usr/local/bin/perl -w
+###########################################
+# release -- go-murmur release script
+# Mike Schilli, 2026 (m@perlmeister.com)
+###########################################
+use strict;
+use Sysadm::Install qw(:all);
+
+  # Patch README.md
+my $code = "```go\n" . slurp("cmd/murmur/main.go") . "```\n";
+sysrun qw(configpatch --eject --key=example1 --comments=markdown README.md );
+open my $pipe, "|-", "configpatch --key=example1 --comments=markdown --replace=EXAMPLE1 README.md";
+print $pipe $code;
+close $pipe;
+
+  # APIUSAGE
+my $docs = "```\n" .
+`go doc --all github.com/mschilli/go-murmur.Murmur;` . 
+"```\n";
+sysrun qw(configpatch --eject --key=apiusage --comments=markdown README.md );
+open $pipe, "|-", "configpatch --key=apiusage --comments=markdown --replace=APIUSAGE README.md";
+print $pipe $docs;
+close $pipe;
+
+  # Run test suite
+sysrun "go", "test";
+
+  # See if cli compiles
+sysrun "cd cmd/murmur; go build; rm -f murmur";
+
+  # everything checked in?
+sysrun "git", "diff-index", "HEAD", "--";
+
+  # Latest tag documented in Changes
+my $git_tag = `git describe --tags --abbrev=0`;
+my $changes_tag = `head -1 CHANGES.md | awk '{ print \$1 }'`;
+chomp $git_tag;
+chomp $changes_tag;
+
+if( $git_tag ne $changes_tag ) {
+    die "CHANGES.md not up to date: git=$git_tag changes=$changes_tag";
+}
+
+  # Check if latest tag points to HEAD
+my $head_tag = `git tag --points-at HEAD`;
+chomp $head_tag;
+if( $head_tag ne $git_tag ) {
+    die "Latest tag not up to date: head=$head_tag release=$git_tag";
+}

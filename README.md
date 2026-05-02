@@ -8,29 +8,81 @@ Go library for simple access to a YAML formatted password file.
 $ cat ~/.murmur.yaml
 fooapp: topsecret
 barapp: hunter3
+```
 
+```
 $ cat mtest.go
+```
+
+<!--(Config::Patch-example1-replace)-->
+```go
 package main
 
 import (
-    "fmt"
-    "github.com/mschilli/go-murmur"
+	"flag"
+	"fmt"
+	"github.com/mschilli/go-murmur"
+	"os"
 )
 
 func main() {
-    m := murmur.NewMurmur()
-    val, err := m.Lookup("barapp")
+	flag.Usage = func() {
+		fmt.Printf("usage: %s secret\n", os.Args[0])
+	}
+	flag.Parse()
 
-    if err != nil {
-	panic(err)
-    }
+	m := murmur.NewMurmur()
 
-    fmt.Printf("val: %s\n", val)
+	if flag.NArg() != 1 {
+		flag.Usage()
+		return
+	}
+
+	secret, err := m.Lookup(flag.Arg(0))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot find secret '%s'\n", flag.Arg(0))
+		os.Exit(1)
+	}
+
+	fmt.Printf("%s\n", secret)
 }
-
-$ ./mtest
-val=hunter3
 ```
+<!--(Config::Patch::replace)-->
+<!-- RVhBTVBMRTEK-->
+<!--(Config::Patch::replace)-->
+<!--(Config::Patch-example1-replace)-->
+
+## API docs
+
+<!--(Config::Patch-apiusage-replace)-->
+```
+package murmur // import "github.com/mschilli/go-murmur"
+
+type Murmur struct {
+	FilePath string
+
+	Dict map[string]string
+	// Has unexported fields.
+}
+    Read secrets from a .murmur YAML file
+
+func NewMurmur() *Murmur
+    Create a new instance
+
+func (m *Murmur) Lookup(name string) (string, error)
+    Look up a .murmur key by name and return its value
+
+func (m *Murmur) Read() error
+    Read the .murmur file into the internal cache
+
+func (m *Murmur) WithFilePath(path string) *Murmur
+    Set the .murmur file path manually
+
+```
+<!--(Config::Patch::replace)-->
+<!-- QVBJVVNBR0UK-->
+<!--(Config::Patch::replace)-->
+<!--(Config::Patch-apiusage-replace)-->
 
 ## Author
 
