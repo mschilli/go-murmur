@@ -5,10 +5,14 @@ Go library for simple access to a YAML formatted password file.
 ## How to use it
 
 ```
-$ cat ~/.murmur.yaml
+$ cat ~/.murmur
 fooapp: topsecret
 barapp: hunter3
 ```
+
+By default, Murmur reads secrets from `~/.murmur`. The file contents are YAML,
+but the default filename does not use a `.yaml` extension. Use `WithFilePath()`
+to read a different file path.
 
 ```
 $ cat mtest.go
