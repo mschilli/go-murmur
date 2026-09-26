@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"github.com/mschilli/go-murmur"
 	"os"
+	"strings"
+	"unicode/utf8"
 )
 
 func main() {
 	filePath := flag.String("file", "", "path to the secrets file (default ~/.murmur)")
+	mask := flag.Bool("mask", false, "print the secret key with a masked value")
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s [options] secret\n", os.Args[0])
 		flag.PrintDefaults()
@@ -28,5 +31,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	if *mask {
+		fmt.Printf("%s: %s\n", flag.Arg(0), strings.Repeat("*", utf8.RuneCountInString(secret)))
+		return
+	}
 	fmt.Printf("%s\n", secret)
 }

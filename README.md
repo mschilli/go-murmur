@@ -20,6 +20,13 @@ For the command-line tool, use `-file` before the secret name:
 murmur -file /path/to/other.murmur fooapp
 ```
 
+Use `-mask` to print the key with one star per Unicode character in the value:
+
+```sh
+$ murmur -mask -file /path/to/other.murmur fooapp
+fooapp: *********
+```
+
 ```
 $ cat mtest.go
 ```
