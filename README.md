@@ -27,6 +27,14 @@ $ murmur -mask -file /path/to/other.murmur fooapp
 fooapp: *********
 ```
 
+Use `-list` without a secret name to print all key/value pairs sorted by key.
+Combine it with `-mask` to mask each value:
+
+```sh
+murmur -list -file /path/to/other.murmur
+murmur -list -mask -file /path/to/other.murmur
+```
+
 ```
 $ cat mtest.go
 ```
