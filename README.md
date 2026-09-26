@@ -14,6 +14,12 @@ By default, Murmur reads secrets from `~/.murmur`. The file contents are YAML,
 but the default filename does not use a `.yaml` extension. Use `WithFilePath()`
 to read a different file path.
 
+For the command-line tool, use `-file` before the secret name:
+
+```sh
+murmur -file /path/to/other.murmur fooapp
+```
+
 ```
 $ cat mtest.go
 ```

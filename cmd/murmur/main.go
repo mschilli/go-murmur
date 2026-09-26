@@ -8,12 +8,14 @@ import (
 )
 
 func main() {
+	filePath := flag.String("file", "", "path to the secrets file (default ~/.murmur)")
 	flag.Usage = func() {
-		fmt.Printf("usage: %s secret\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s [options] secret\n", os.Args[0])
+		flag.PrintDefaults()
 	}
 	flag.Parse()
 
-	m := murmur.NewMurmur()
+	m := murmur.NewMurmur().WithFilePath(*filePath)
 
 	if flag.NArg() != 1 {
 		flag.Usage()
